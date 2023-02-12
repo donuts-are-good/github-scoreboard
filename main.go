@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -27,7 +27,7 @@ func main() {
 	handle(err)
 	defer res.Body.Close()
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	handle(err)
 
 	var repos []Repository
@@ -64,13 +64,13 @@ func generateSVG(repos []Repository) string {
 	for i, repo := range repos {
 		escapedDescription := html.EscapeString(repo.Description)
 		if i < 9 {
-			svgString += fmt.Sprintf("<text x='20' y='%d' fill='black' font-family='monospace'>%d.  ⭐[%d] - %s - %s</text>", 20+20*i, i+1, repo.Stars, repo.Name, escapedDescription)
-
+			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d.  ⭐[%d] - %s - %s</text></a>", repo.Name, 20+20*i, i+1, repo.Stars, repo.Name, escapedDescription)
 		} else {
-			svgString += fmt.Sprintf("<text x='20' y='%d' fill='black' font-family='monospace'>%d. ⭐[%d] - %s - %s</text>", 20+20*i, i+1, repo.Stars, repo.Name, escapedDescription)
-
+			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d. ⭐[%d] - %s - %s</text></a>", repo.Name, 20+20*i, i+1, repo.Stars, repo.Name, escapedDescription)
 		}
 	}
+
 	svgString += "</svg>"
+
 	return svgString
 }
