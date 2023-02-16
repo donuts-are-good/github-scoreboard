@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 )
 
 type Repository struct {
@@ -58,8 +59,10 @@ func handle(err error) {
 func generateSVG(repos []Repository) string {
 	var svgString string
 
-	svgString += "<svg width='800' height='600' xmlns='http://www.w3.org/2000/svg'>"
-	svgString += "<rect width='800' height='600' fill='white' />"
+	itemHeight := 20
+	svgHeight := len(repos) * itemHeight
+	svgString += fmt.Sprintf("<svg width='800' height='%d' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>", svgHeight)
+	svgString += "<rect width='800' height='" + strconv.Itoa(svgHeight) + "' fill='white' />"
 
 	for i, repo := range repos {
 		escapedDescription := html.EscapeString(repo.Description)
