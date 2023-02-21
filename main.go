@@ -10,6 +10,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type Repository struct {
@@ -61,15 +62,36 @@ func generateSVG(repos []Repository) string {
 
 	itemHeight := 20
 	svgHeight := len(repos) * itemHeight
+	maxStars := 0
+	for _, repo := range repos {
+		if repo.Stars > maxStars {
+			maxStars = repo.Stars
+		}
+	}
+	maxDigits := len(strconv.Itoa(maxStars))
+	if maxDigits > 3 {
+		maxDigits = 3
+	}
 	svgString += fmt.Sprintf("<svg width='800' height='%d' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>", svgHeight)
 	svgString += "<rect width='800' height='" + strconv.Itoa(svgHeight) + "' fill='white' />"
 
 	for i, repo := range repos {
 		escapedDescription := html.EscapeString(repo.Description)
+		padding := "  "
+		if len(strconv.Itoa(repo.Stars)) < maxDigits {
+			padding = strings.Repeat(" ", maxDigits-len(strconv.Itoa(repo.Stars)))
+		}
+		starString := strconv.Itoa(repo.Stars)
+		if repo.Stars >= 1000 {
+			starString = fmt.Sprintf("%.1fk", float64(repo.Stars)/1000.0)
+		}
+		if repo.Stars >= 1000000 {
+			starString = fmt.Sprintf("%.1fM", float64(repo.Stars)/1000000.0)
+		}
 		if i < 9 {
-			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d.  ⭐[%d] - %s - %s</text></a>", repo.Name, 20+20*i, i+1, repo.Stars, repo.Name, escapedDescription)
+			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d.  ⭐[%s]%s - %s - %s</text></a>", repo.Name, 20+20*i, i+1, starString, padding, repo.Name, escapedDescription)
 		} else {
-			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d. ⭐[%d] - %s - %s</text></a>", repo.Name, 20+20*i, i+1, repo.Stars, repo.Name, escapedDescription)
+			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d. ⭐[%s]%s - %s - %s</text></a>", repo.Name, 20+20*i, i+1, starString, padding, repo.Name, escapedDescription)
 		}
 	}
 
