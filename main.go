@@ -10,7 +10,6 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 type Repository struct {
@@ -59,7 +58,6 @@ func handle(err error) {
 
 func generateSVG(repos []Repository) string {
 	var svgString string
-
 	itemHeight := 20
 	svgHeight := len(repos) * itemHeight
 	maxStars := 0
@@ -72,14 +70,22 @@ func generateSVG(repos []Repository) string {
 	if maxDigits > 3 {
 		maxDigits = 3
 	}
+	starPadding := "  "
+	if maxDigits == 2 {
+		starPadding = " "
+	}
+	if maxDigits == 3 {
+		starPadding = ""
+	}
 	svgString += fmt.Sprintf("<svg width='800' height='%d' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>", svgHeight)
+	svgString += "<!--. this svg was generated with github-scoreboard https://github.com/donuts-are-good/github-scoreboard  .-->"
 	svgString += "<rect width='800' height='" + strconv.Itoa(svgHeight) + "' fill='white' />"
 
 	for i, repo := range repos {
 		escapedDescription := html.EscapeString(repo.Description)
-		padding := "  "
-		if len(strconv.Itoa(repo.Stars)) < maxDigits {
-			padding = strings.Repeat(" ", maxDigits-len(strconv.Itoa(repo.Stars)))
+		indexPadding := "  "
+		if i >= 9 {
+			indexPadding = " "
 		}
 		starString := strconv.Itoa(repo.Stars)
 		if repo.Stars >= 1000 {
@@ -88,14 +94,8 @@ func generateSVG(repos []Repository) string {
 		if repo.Stars >= 1000000 {
 			starString = fmt.Sprintf("%.1fM", float64(repo.Stars)/1000000.0)
 		}
-		if i < 9 {
-			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d.  ⭐[%s]%s - %s - %s</text></a>", repo.Name, 20+20*i, i+1, starString, padding, repo.Name, escapedDescription)
-		} else {
-			svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d. ⭐[%s]%s - %s - %s</text></a>", repo.Name, 20+20*i, i+1, starString, padding, repo.Name, escapedDescription)
-		}
+		svgString += fmt.Sprintf("<a xlink:href='https://github.com/donuts-are-good/%s'><text x='20' y='%d' fill='black' font-family='monospace'>%d.%s⭐[%s]%s - %s - %s</text></a>", repo.Name, 20+20*i, i+1, indexPadding, starString, starPadding, repo.Name, escapedDescription)
 	}
-
 	svgString += "</svg>"
-
 	return svgString
 }
