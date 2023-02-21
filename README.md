@@ -6,4 +6,4 @@ Each entry on your scoreboard is a clickable link to the repository that it repr
 
 # example
 
-![example scoreboard](https://raw.githubusercontent.com/donuts-are-good/github-scoreboard/master/repo_list.svgg)
+![example scoreboard](https://raw.githubusercontent.com/donuts-are-good/github-scoreboard/master/repo_list.svg)
