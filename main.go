@@ -58,7 +58,7 @@ func handle(err error) {
 
 func generateSVG(repos []Repository) string {
 	var svgString string
-	itemHeight := 20
+	itemHeight := 21
 	svgHeight := len(repos) * itemHeight
 	maxStars := 0
 	for _, repo := range repos {
